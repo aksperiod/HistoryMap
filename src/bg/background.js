@@ -1,4 +1,4 @@
-
+var _port = null;
 var currentTabs = [];
 
 
@@ -7,7 +7,7 @@ var SmartTab = function(options){
 	this.startDate = options.date || -1;
 	this.endDate = -1;
 	this.sourceTab = options.sourceTab || null;
-	this.children = null;
+	this.children = [];
 	this.sessions = [];
 	this.addSession = function(session){
 		this.sessions.push(session);
@@ -76,12 +76,24 @@ function onUpdated(tabId , info) {
 }
 
 function onCreated(data){
+	//check if source tab is and then push tab to child, 
+	//vuejs has to recursively create tab chain then,
+	//doesnt have to be tied to session as long as there is a time aspect
+	
 	T.add(new SmartTab({id:data.id, date:Date.now(), sourceTab:data.openerTabId}));
+	if(_port){
+		console.log("messaging script");
+		_port.postMessage(T.tabs);
+	}
 }
 
 function onRemoved(tabId, removeInfo) {
 	console.log(tabId);
 	T.remove(tabId);
+	if(_port){
+		console.log("messaging script");
+		_port.postMessage(T.tabs);
+	}
 }
 
 function chromeTabToSession(tab) {
@@ -94,8 +106,11 @@ function chromeTabToSession(tab) {
 				favicon: tab.favIconUrl,
 				start: Date.now()
 			})
-			);
-
+		);
+	}
+	if(_port){
+		console.log("messaging script");
+		_port.postMessage(T.tabs);
 	}
 }
 
@@ -115,7 +130,13 @@ chrome.tabs.getAllInWindow(function(tabList){
 });
 
 
-// var port = chrome.runtime.connect({name: "knockknock"});
-// port.postMessage(T.tabs);
+
+chrome.runtime.onConnect.addListener(function(port) {
+	_port = port;
+	port.postMessage(T.tabs);
+
+
+});
+
 
 

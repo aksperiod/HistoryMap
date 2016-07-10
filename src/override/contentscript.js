@@ -13,7 +13,7 @@ var vm = new Vue({
 	el:"#view",
 	data:{
 		history:[],
-		tabs: b.T.tabs,
+		tabs: [],
 		menu:[{
 			name:"Visited",
 			selected:true
@@ -31,13 +31,13 @@ var vm = new Vue({
 });
 
 
+var port = chrome.runtime.connect({name: "knockknock"});
+port.onMessage.addListener(function(msg) {
+	console.log("new Tab information: ",msg);
+	vm.$set("tabs", msg);
+});
 
-// chrome.runtime.onConnect.addListener(function(port) {
-// 	port.onMessage.addListener(function(msg) {
-// 		console.log("new Tab information: ",msg);
-// 		vm.$set("tabs", msg);
-// 	});
-// });
+
 
 
 
