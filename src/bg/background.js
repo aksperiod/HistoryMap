@@ -1,4 +1,6 @@
+
 var currentTabs = [];
+
 
 var SmartTab = function(options){
 	this.id = options.id;
@@ -69,6 +71,7 @@ function onUpdated(tabId , info) {
 	 if (info.status == "complete") {
         console.log(""+tabId+" has finished loading");
     	chrome.tabs.get(tabId, chromeTabToSession);
+
     }
 }
 
@@ -91,7 +94,8 @@ function chromeTabToSession(tab) {
 				favicon: tab.favIconUrl,
 				start: Date.now()
 			})
-		);
+			);
+
 	}
 }
 
@@ -111,5 +115,7 @@ chrome.tabs.getAllInWindow(function(tabList){
 });
 
 
+// var port = chrome.runtime.connect({name: "knockknock"});
+// port.postMessage(T.tabs);
 
 
